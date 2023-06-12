@@ -1,8 +1,13 @@
 import createMockInstance from '../../../test/test.utils';
-import { NotFoundException, HttpException } from '@nestjs/common';
+import {
+  NotFoundException,
+  HttpException,
+  ConflictException,
+} from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { Customer } from './model/customer';
 import { CustomerController } from './customer.controller';
+import { UpdateCustomerDTO } from './dto/update-customer.dto';
 
 jest.mock('./customer.service');
 
@@ -13,6 +18,7 @@ describe('CustomerController', () => {
 
   let findByIdSpy: jest.SpyInstance<Promise<Customer>>;
   let createSpy: jest.SpyInstance<Promise<Customer>>;
+  let updateSpy: jest.SpyInstance<Promise<Customer>>;
 
   beforeEach(async () => {
     customerService = createMockInstance(CustomerService);
@@ -21,6 +27,7 @@ describe('CustomerController', () => {
 
     findByIdSpy = jest.spyOn(customerService, 'findById');
     createSpy = jest.spyOn(customerService, 'create');
+    updateSpy = jest.spyOn(customerService, 'update');
   });
 
   describe('findById', () => {
@@ -103,6 +110,86 @@ describe('CustomerController', () => {
 
       // Assert
       await expect(response).rejects.toThrowError(HttpException);
+    });
+  });
+
+  describe('update', () => {
+    it('should update a customer', async () => {
+      // Arrange
+      const customer = new Customer({
+        id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+        document: '1234567890',
+        name: 'Customer Name',
+      });
+      const dto: UpdateCustomerDTO = customer.toJSON();
+      updateSpy.mockResolvedValueOnce(customer);
+
+      // Act
+      const response = await controller.update(
+        { id: '385c33ce-e639-4eca-8c9f-9a7ac75f2c83' },
+        {
+          id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+          document: '1234567890',
+          name: 'Customer Name',
+        },
+      );
+
+      // Assert
+      expect(response).toStrictEqual(customer);
+    });
+
+    it('should throw an exception if cache is unavailable', async () => {
+      // Arrange
+      updateSpy.mockRejectedValue(new Error('Error: Cache unavailable'));
+
+      // Act
+      const response = controller.update(
+        { id: '385c33ce-e639-4eca-8c9f-9a7ac75f2c83' },
+        {
+          id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+          document: '123456',
+          name: 'Customer',
+        },
+      );
+
+      // Assert
+      await expect(response).rejects.toThrowError(HttpException);
+    });
+
+    it('should throw an exception if customer does not exist', async () => {
+      // Arrange
+      updateSpy.mockRejectedValue(new Error('Customer not found'));
+
+      // Act
+      const response = controller.update(
+        { id: '385c33ce-e639-4eca-8c9f-9a7ac75f2c83' },
+        {
+          id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+          document: '123456',
+          name: 'Customer',
+        },
+      );
+
+      // Assert
+      await expect(response).rejects.toThrowError(NotFoundException);
+    });
+
+    it('should throw an exception if ID already exists', async () => {
+      // Arrange
+      updateSpy.mockRejectedValue(new Error('ID already exists'));
+
+      // Act
+      const response = controller.update(
+        { id: '385c33ce-e639-4eca-8c9f-9a7ac75f2c83' },
+        {
+          id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+          document: '123456',
+          name: 'Customer',
+        },
+      );
+
+      // Assert
+      await expect(response).rejects.toThrowError(ConflictException);
     });
   });
 });
