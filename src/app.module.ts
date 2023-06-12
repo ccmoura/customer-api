@@ -5,6 +5,8 @@ import validationSchema from './config/env.schema';
 import { CacheProvider } from './providers/cache/cache';
 import { RedisClient } from './providers/cache/clients/redis';
 import { ICacheClient } from './providers/cache/cache.interface';
+import { CustomerController } from './modules/customer/customer.controller';
+import { CustomerService } from './modules/customer/customer.service';
 
 @Module({
   imports: [
@@ -12,8 +14,9 @@ import { ICacheClient } from './providers/cache/cache.interface';
       validationSchema,
     }),
   ],
-  controllers: [],
+  controllers: [CustomerController],
   providers: [
+    CustomerService,
     AppService,
     RedisClient,
     {

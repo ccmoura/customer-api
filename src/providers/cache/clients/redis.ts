@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
-import { ICacheClient, ICacheProvider } from '../cache.interface';
+import { ICacheClient } from '../cache.interface';
 
 interface IRedisConfig {
   port: number;
@@ -31,6 +31,12 @@ export class RedisClient implements ICacheClient {
   }
 
   async set(key: string, value: string): Promise<any> {
-    return this.client.set(key, value);
+    const result = await this.client.set(key, value);
+
+    return result === 'OK';
+  }
+
+  isAvailable(): boolean {
+    return this.client.status === 'ready';
   }
 }
