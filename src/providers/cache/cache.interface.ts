@@ -1,9 +1,10 @@
 export interface ICacheClient {
-  get: (key: string) => Promise<any>;
-  set: (key: string, value: string) => Promise<any>;
+  get: (key: string) => Promise<string>;
+  set: (key: string, value: string) => Promise<boolean>;
+  isAvailable: () => boolean;
 }
 
 export interface ICacheProvider {
-  load: (key: string) => Promise<any>;
-  save: (key: string, value: string) => Promise<any>;
+  load: (key: string) => Promise<unknown>;
+  save: (key: string, value: unknown) => Promise<any>;
 }
