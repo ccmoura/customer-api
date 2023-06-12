@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ICacheClient, ICacheProvider } from './cache.interface';
-import { ICustomer } from 'src/modules/customer/customer.interface';
 
 @Injectable()
 export class CacheProvider implements ICacheProvider {
@@ -23,11 +22,7 @@ export class CacheProvider implements ICacheProvider {
 
     const data = await this.client.get(`${this.prefix}:${key}`);
 
-    if (!data) {
-      throw new Error('Data not found');
-    }
-
-    return JSON.parse(data);
+    return data ? JSON.parse(data) : null;
   }
 
   async save(key: string, value: unknown): Promise<any> {
@@ -47,5 +42,19 @@ export class CacheProvider implements ICacheProvider {
     }
 
     return null;
+  }
+
+  async update(key: string, value: any): Promise<any> {
+    const cacheAvailable = this.client.isAvailable();
+
+    if (!cacheAvailable) {
+      throw new Error('Cache unavailable');
+    }
+
+    return this.client.update(
+      `${this.prefix}:${key}`,
+      `${this.prefix}:${value.id}`,
+      JSON.stringify(value),
+    );
   }
 }

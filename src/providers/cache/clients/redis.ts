@@ -36,6 +36,29 @@ export class RedisClient implements ICacheClient {
     return result === 'OK';
   }
 
+  async update(
+    oldKey: string,
+    newKey: string,
+    value: string,
+  ): Promise<boolean> {
+    let success = false;
+    await this.client
+      .multi()
+      .del(oldKey)
+      .set(newKey, value)
+      .exec((error) => {
+        if (error) {
+          // add logger
+          console.error(error);
+          success = false;
+        }
+
+        success = true;
+      });
+
+    return success;
+  }
+
   isAvailable(): boolean {
     return this.client.status === 'ready';
   }
