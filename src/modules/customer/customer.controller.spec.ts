@@ -12,6 +12,7 @@ describe('CustomerController', () => {
   let customerService: jest.Mocked<CustomerService>;
 
   let findByIdSpy: jest.SpyInstance<Promise<Customer>>;
+  let createSpy: jest.SpyInstance<Promise<Customer>>;
 
   beforeEach(async () => {
     customerService = createMockInstance(CustomerService);
@@ -19,6 +20,7 @@ describe('CustomerController', () => {
     controller = new CustomerController(customerService);
 
     findByIdSpy = jest.spyOn(customerService, 'findById');
+    createSpy = jest.spyOn(customerService, 'create');
   });
 
   describe('findById', () => {
@@ -61,6 +63,42 @@ describe('CustomerController', () => {
       // Act
       const response = controller.findById({
         id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+      });
+
+      // Assert
+      await expect(response).rejects.toThrowError(HttpException);
+    });
+  });
+
+  describe('create', () => {
+    it('should create a customer', async () => {
+      // Arrange
+      const customer = new Customer({
+        id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+        document: '1234567890',
+        name: 'Customer Name',
+      });
+      createSpy.mockResolvedValueOnce(customer);
+
+      // Act
+      const response = await controller.create({
+        document: '1234567890',
+        name: 'Customer Name',
+      });
+
+      // Assert
+
+      expect(response).toStrictEqual(customer);
+    });
+
+    it('should throw an exception if cache is unavailable', async () => {
+      // Arrange
+      createSpy.mockRejectedValue(new Error('Error: Cache unavailable'));
+
+      // Act
+      const response = controller.create({
+        document: '123456',
+        name: 'Customer',
       });
 
       // Assert
