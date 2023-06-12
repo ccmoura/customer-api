@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import validationSchema from './config/env.schema';
+import { CacheProvider } from './providers/cache/cache';
+import { RedisClient } from './providers/cache/clients/redis';
+import { ICacheClient } from './providers/cache/cache.interface';
 
 @Module({
   imports: [
@@ -10,7 +12,16 @@ import validationSchema from './config/env.schema';
       validationSchema,
     }),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    AppService,
+    RedisClient,
+    {
+      provide: 'CacheProvider',
+      useFactory: (configService: ConfigService, client: ICacheClient) =>
+        new CacheProvider(configService, client),
+      inject: [ConfigService, RedisClient],
+    },
+  ],
 })
 export class AppModule {}
