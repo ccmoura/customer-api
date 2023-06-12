@@ -7,14 +7,17 @@ import {
   Param,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDTO } from './dto/create-customer.dto';
 import { FindCustomerByIdDTO } from './dto/find-customer-by-id.dto';
 import { UpdateCustomerDTO } from './dto/update-customer.dto';
 import { Customer } from './model/customer';
+import { AuthSSOGuard } from '../../config/auth/sso/sso.guard';
 
 @Controller('customers')
+@UseGuards(AuthSSOGuard)
 export class CustomerController {
   constructor(private customerService: CustomerService) {}
 
