@@ -14,7 +14,9 @@ export class CacheProvider implements ICacheProvider {
   }
 
   async load(key: string): Promise<any> {
-    return this.client.get(`${this.prefix}:${key}`);
+    const data = await this.client.get(`${this.prefix}:${key}`);
+
+    return JSON.parse(data);
   }
 
   async save(key: string, value: string): Promise<any> {
