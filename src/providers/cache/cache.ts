@@ -23,6 +23,10 @@ export class CacheProvider implements ICacheProvider {
 
     const data = await this.client.get(`${this.prefix}:${key}`);
 
+    if (!data) {
+      throw new Error('Data not found');
+    }
+
     return JSON.parse(data);
   }
 

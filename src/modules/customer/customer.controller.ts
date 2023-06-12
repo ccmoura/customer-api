@@ -27,6 +27,10 @@ export class CustomerController {
       if (error.message === 'Error: Cache unavailable') {
         throw new HttpException('Cache unavailable', HttpStatus.BAD_GATEWAY);
       }
+
+      if (error.message === 'Error: Data not found') {
+        throw new HttpException('Customer not found', HttpStatus.NOT_FOUND);
+      }
     }
   }
 
