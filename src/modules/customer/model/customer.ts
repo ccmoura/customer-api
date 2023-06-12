@@ -17,6 +17,10 @@ export class Customer {
     return this._id;
   }
 
+  public set id(id: string) {
+    this._id = id;
+  }
+
   public get document(): string {
     return this._document;
   }
