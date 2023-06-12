@@ -22,8 +22,6 @@ export class AuthSSOGuard extends AuthGuard('sso') implements CanActivate {
       'SSO_CHECK_TOKEN_ENDPOINT',
     );
     axios.defaults.baseURL = this.configService.get('SSO_URL');
-
-    console.log(this.checkTokenEndpoint, axios.defaults.baseURL);
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

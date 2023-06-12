@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import validationSchema from './config/env.schema';
 import { CacheProvider } from './providers/cache/cache';
@@ -17,7 +16,6 @@ import { CustomerService } from './modules/customer/customer.service';
   controllers: [CustomerController],
   providers: [
     CustomerService,
-    AppService,
     RedisClient,
     {
       provide: 'CacheProvider',
