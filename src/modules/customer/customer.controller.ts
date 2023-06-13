@@ -5,11 +5,8 @@ import {
   Put,
   Body,
   Param,
-  HttpException,
-  HttpStatus,
   UseGuards,
   NotFoundException,
-  ConflictException,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDTO } from './dto/create-customer.dto';
@@ -17,6 +14,7 @@ import { FindCustomerByIdDTO } from './dto/find-customer-by-id.dto';
 import { UpdateCustomerDTO } from './dto/update-customer.dto';
 import { Customer } from './model/customer';
 import { AuthSSOGuard } from '../../config/auth/sso/sso.guard';
+import generateHttpException from '../../util/generate-http-exception';
 
 @Controller('customers')
 @UseGuards(AuthSSOGuard)
@@ -30,10 +28,7 @@ export class CustomerController {
 
       return customer;
     } catch (error) {
-      // implement error messages
-      if (error.message === 'Error: Cache unavailable') {
-        throw new HttpException('Cache unavailable', HttpStatus.BAD_GATEWAY);
-      }
+      generateHttpException(error);
     }
   }
 
@@ -43,10 +38,7 @@ export class CustomerController {
     try {
       customer = await this.customerService.findById(id);
     } catch (error) {
-      // implement error messages
-      if (error.message === 'Error: Cache unavailable') {
-        throw new HttpException('Cache unavailable', HttpStatus.BAD_GATEWAY);
-      }
+      generateHttpException(error);
     }
 
     if (!customer) {
@@ -66,18 +58,7 @@ export class CustomerController {
 
       return customer;
     } catch (error) {
-      if (error.message === 'Customer not found') {
-        throw new NotFoundException();
-      }
-
-      if (error.message === 'ID already exists') {
-        throw new ConflictException();
-      }
-
-      // implement error messages
-      if (error.message === 'Error: Cache unavailable') {
-        throw new HttpException('Cache unavailable', HttpStatus.BAD_GATEWAY);
-      }
+      generateHttpException(error);
     }
   }
 }
