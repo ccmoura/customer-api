@@ -20,7 +20,7 @@ describe('CustomerController', () => {
   let createSpy: jest.SpyInstance<Promise<Customer>>;
   let updateSpy: jest.SpyInstance<Promise<Customer>>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     customerService = createMockInstance(CustomerService);
 
     controller = new CustomerController(customerService);
@@ -121,7 +121,6 @@ describe('CustomerController', () => {
         document: '1234567890',
         name: 'Customer Name',
       });
-      const dto: UpdateCustomerDTO = customer.toJSON();
       updateSpy.mockResolvedValueOnce(customer);
 
       // Act

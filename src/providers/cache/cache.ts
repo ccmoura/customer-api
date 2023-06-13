@@ -1,15 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ICacheClient, ICacheProvider } from './cache.interface';
 
 @Injectable()
-export class CacheProvider implements ICacheProvider {
+export class CacheProvider implements ICacheProvider, OnModuleInit {
   private prefix: string;
 
   constructor(
     private configService: ConfigService,
     private client: ICacheClient,
-  ) {
+  ) {}
+
+  onModuleInit() {
     this.prefix = this.configService.get('CACHE_PREFIX');
   }
 
@@ -37,11 +39,7 @@ export class CacheProvider implements ICacheProvider {
       JSON.stringify(value),
     );
 
-    if (result) {
-      return value;
-    }
-
-    return null;
+    return result ? value : null;
   }
 
   async update(key: string, value: any): Promise<any> {
