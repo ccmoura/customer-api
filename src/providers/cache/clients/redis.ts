@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import { ICacheClient } from '../cache.interface';
@@ -11,11 +11,13 @@ interface IRedisConfig {
 }
 
 @Injectable()
-export class RedisClient implements ICacheClient {
+export class RedisClient implements ICacheClient, OnModuleInit {
   private client: Redis;
   private config: IRedisConfig;
 
-  constructor(private configService: ConfigService) {
+  constructor(private configService: ConfigService) {}
+
+  onModuleInit() {
     this.config = {
       port: this.configService.get('CACHE_PORT'),
       host: this.configService.get('CACHE_HOST'),

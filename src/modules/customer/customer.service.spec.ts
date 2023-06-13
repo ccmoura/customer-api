@@ -13,7 +13,7 @@ describe('CustomerService', () => {
   let saveSpy: jest.SpyInstance<any>;
   let updateSpy: jest.SpyInstance<any>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     cacheProvider = createMockInstance(CacheProvider);
 
     service = new CustomerService(cacheProvider);

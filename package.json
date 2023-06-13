@@ -77,7 +77,8 @@
     "coveragePathIgnorePatterns": [
       "/src/config/",
       ".module.(t|j)s",
-      "main.(t|j)s"
+      "main.(t|j)s",
+      "/src/providers/cache/clients/"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
