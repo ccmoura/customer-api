@@ -50,8 +50,8 @@ export class RedisClient implements ICacheClient, OnModuleInit {
       .set(newKey, value)
       .exec((error) => {
         if (error) {
-          // add logger
           console.error(error);
+
           success = false;
         }
 
