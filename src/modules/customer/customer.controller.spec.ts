@@ -3,11 +3,11 @@ import {
   NotFoundException,
   HttpException,
   ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { Customer } from './model/customer';
 import { CustomerController } from './customer.controller';
-import { UpdateCustomerDTO } from './dto/update-customer.dto';
 
 jest.mock('./customer.service');
 
@@ -65,7 +65,7 @@ describe('CustomerController', () => {
 
     it('should throw an exception if cache is unavailable', async () => {
       // Arrange
-      findByIdSpy.mockRejectedValue(new Error('Error: Cache unavailable'));
+      findByIdSpy.mockRejectedValue(new Error('Cache unavailable'));
 
       // Act
       const response = controller.findById({
@@ -74,6 +74,19 @@ describe('CustomerController', () => {
 
       // Assert
       await expect(response).rejects.toThrowError(HttpException);
+    });
+
+    it('should throw internal server error exception if error is not mapped', async () => {
+      // Arrange
+      findByIdSpy.mockRejectedValue(new Error('Some error'));
+
+      // Act
+      const response = controller.findById({
+        id: 'e58db9d0-1eca-4d9f-9fd6-d0c17a3a1778',
+      });
+
+      // Assert
+      await expect(response).rejects.toThrowError(InternalServerErrorException);
     });
   });
 
@@ -100,7 +113,7 @@ describe('CustomerController', () => {
 
     it('should throw an exception if cache is unavailable', async () => {
       // Arrange
-      createSpy.mockRejectedValue(new Error('Error: Cache unavailable'));
+      createSpy.mockRejectedValue(new Error('Cache unavailable'));
 
       // Act
       const response = controller.create({
@@ -139,7 +152,7 @@ describe('CustomerController', () => {
 
     it('should throw an exception if cache is unavailable', async () => {
       // Arrange
-      updateSpy.mockRejectedValue(new Error('Error: Cache unavailable'));
+      updateSpy.mockRejectedValue(new Error('Cache unavailable'));
 
       // Act
       const response = controller.update(
